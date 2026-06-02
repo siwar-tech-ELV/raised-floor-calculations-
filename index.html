@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EJAF – حاسبة الأرضيات المرتفعة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#070d1a;--bg2:#0d1a2e;--bg3:#111c30;--card:#13203a;--card2:#192b47;
+  --border:#1e3050;--border2:#2a4070;
+  --blue:#2563eb;--blue2:#3b82f6;--blue3:#60a5fa;
+  --gold:#f59e0b;--gold2:#fbbf24;
+  --green:#10b981;--red:#ef4444;
+  --text:#e8f0fe;--text2:#94a3b8;--text3:#64748b;
+  --r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-size:14px;overflow-x:hidden}
+
+/* ── HEADER ── */
+.header{
+  background:linear-gradient(135deg,#060e1c,#0d1f3c,#060e1c);
+  border-bottom:1px solid var(--border2);
+  padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 4px 30px #00000090;
+}
+.logo-wrap{display:flex;align-items:center;gap:12px}
+.logo-box{
+  background:linear-gradient(135deg,#1740a0,#2563eb);
+  border-radius:8px;padding:6px 12px;
+  box-shadow:0 0 20px #2563eb50;
+}
+.logo-box span{font-size:22px;font-weight:900;color:#fff;letter-spacing:3px;display:block;line-height:1}
+.logo-box small{font-size:8px;color:#93c5fd;letter-spacing:1px}
+.app-name{font-size:16px;font-weight:800;color:var(--text)}
+.app-sub{font-size:10px;color:var(--text3)}
+.hdr-btns{display:flex;gap:8px;align-items:center}
+.lang-btn{
+  background:var(--card2);border:1px solid var(--border2);
+  color:var(--blue3);padding:5px 12px;border-radius:20px;
+  cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;
+}
+.powered-tag{font-size:9px;color:var(--blue2);opacity:.7;text-align:center}
+
+/* ── TABS ── */
+.tabs{
+  display:flex;background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{
+  flex-shrink:0;padding:10px 16px;background:none;border:none;
+  border-bottom:2px solid transparent;color:var(--text3);
+  cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;
+  white-space:nowrap;transition:.2s;
+}
+.tab-btn.active{color:var(--blue2);border-bottom-color:var(--blue2)}
+
+/* ── CONTENT ── */
+.content{padding:14px;max-width:900px;margin:0 auto;padding-bottom:80px}
+
+/* ── CARDS ── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;margin-bottom:14px;
+}
+.card-title{
+  font-size:13px;font-weight:700;color:var(--blue3);
+  margin-bottom:14px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;
+}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:500px){.form-grid{grid-template-columns:1fr}}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px}
+.fg input,.fg select,.fg textarea{
+  width:100%;background:var(--bg2);border:1px solid var(--border);
+  border-radius:6px;padding:8px 10px;color:var(--text);
+  font-family:'Cairo',sans-serif;font-size:13px;outline:none;
+  transition:.2s;
+}
+.fg input:focus,.fg select:focus{border-color:var(--blue2);box-shadow:0 0 0 2px #2563eb25}
+.fg textarea{resize:vertical;min-height:60px}
+.fg select option{background:var(--bg2)}
+
+/* ── BRANDS ── */
+.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
+.brand-btn{
+  border:2px solid var(--border);border-radius:7px;
+  padding:7px 4px;cursor:pointer;text-align:center;
+  font-family:'Cairo',sans-serif;transition:.2s;color:#fff;
+}
+.brand-btn .bn{font-weight:900;font-size:11px;display:block}
+.brand-btn .bs{font-size:9px;opacity:.8;display:block;margin-top:1px}
+.brand-btn.active{box-shadow:0 0 12px #3b82f660}
+
+/* ── SIZE BTNS ── */
+.size-row{display:flex;gap:6px}
+.size-btn{
+  flex:1;background:var(--card2);border:1px solid var(--border);
+  color:var(--text2);padding:7px 4px;border-radius:6px;
+  cursor:pointer;font-family:'Cairo',sans-serif;font-size:11px;
+  transition:.2s;text-align:center;
+}
+.size-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* ── RANGE ── */
+.range-wrap{margin-top:4px}
+.range-wrap input[type=range]{width:100%;accent-color:var(--gold)}
+.range-val{color:var(--gold);font-weight:700;font-size:13px}
+
+/* ── RAMP BOX ── */
+.ramp-box{
+  background:var(--bg2);border:1px solid #10b98130;
+  border-radius:8px;padding:12px;margin-top:8px;
+}
+.ramp-note{font-size:10px;color:var(--text3);margin-top:6px}
+
+/* ── CALC BTN ── */
+.calc-btn{
+  width:100%;background:linear-gradient(135deg,#1740a0,#2563eb);
+  color:#fff;border:none;border-radius:8px;padding:13px;
+  font-size:15px;font-weight:700;cursor:pointer;
+  font-family:'Cairo',sans-serif;margin-top:6px;
+  box-shadow:0 4px 20px #2563eb40;transition:.2s;
+}
+.calc-btn:active{transform:scale(.98)}
+
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+@media(min-width:500px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+.kpi-card{
+  background:var(--card);border-radius:var(--r);padding:12px 10px;
+  text-align:center;border-top:3px solid;
+}
+.kpi-icon{font-size:20px;margin-bottom:4px}
+.kpi-val{font-size:18px;font-weight:900;margin-bottom:2px}
+.kpi-label{font-size:10px;color:var(--text3)}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;min-width:420px}
+th{background:var(--bg);color:var(--blue3);padding:8px 10px;font-size:11px;font-weight:600;text-align:start}
+td{padding:7px 10px;font-size:12px;border-bottom:1px solid var(--border)}
+tr:nth-child(even) td{background:var(--bg2)}
+td:nth-child(2){font-weight:700;color:var(--gold)}
+.price-input{
+  width:80px;background:var(--bg);border:1px solid var(--border);
+  color:var(--text);padding:3px 6px;border-radius:4px;
+  font-family:'Cairo',sans-serif;font-size:11px;text-align:center;
+}
+.total-row td{font-weight:700;color:var(--green);background:var(--bg2)!important}
+
+/* ── RAMP RESULT ── */
+.ramp-result{
+  background:var(--bg2);border:1px solid #10b98130;
+  border-radius:8px;padding:14px;margin-top:0;
+}
+.ramp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:480px){.ramp-grid{grid-template-columns:repeat(3,1fr)}}
+.ramp-item{text-align:center}
+.ramp-item .rv{font-weight:700;color:var(--green);font-size:14px}
+.ramp-item .rl{font-size:10px;color:var(--text3)}
+
+/* ── SPECS ── */
+.specs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:480px){.specs-grid{grid-template-columns:repeat(3,1fr)}}
+.spec-item{background:var(--bg2);border-radius:6px;padding:10px;text-align:center}
+.spec-val{font-weight:700;color:var(--text);font-size:13px}
+.spec-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* ── EXPORT BTNS ── */
+.export-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.export-btn{
+  flex:1;min-width:130px;border:none;border-radius:8px;
+  padding:12px;font-size:13px;font-weight:700;cursor:pointer;
+  font-family:'Cairo',sans-serif;color:#fff;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:.2s;
+}
+.export-btn:active{transform:scale(.97)}
+.btn-xlsx{background:linear-gradient(135deg,#166534,#22c55e)}
+.btn-pdf{background:linear-gradient(135deg,#991b1b,#ef4444)}
+
+/* ── VISUAL TAB ── */
+.upload-area{
+  border:2px dashed var(--border2);border-radius:10px;
+  padding:30px;text-align:center;cursor:pointer;
+  transition:.2s;color:var(--text3);
+}
+.upload-area:hover{border-color:var(--blue2);color:var(--blue3)}
+.canvas-wrap{
+  position:relative;overflow:auto;
+  background:#000;border-radius:8px;
+  max-height:420px;border:1px solid var(--border);
+}
+#plan-canvas{display:block}
+.vis-controls{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.vis-btn{
+  background:var(--card2);border:1px solid var(--border);
+  color:var(--text2);padding:5px 10px;border-radius:6px;
+  cursor:pointer;font-family:'Cairo',sans-serif;font-size:11px;
+}
+.vis-btn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* ── GRID PREVIEW ── */
+.grid-preview-wrap{overflow-x:auto;margin-top:10px}
+#grid-svg{display:block}
+
+/* ── WARNINGS ── */
+.warn{color:var(--gold);font-size:11px;margin-top:4px;background:#451a0320;padding:4px 8px;border-radius:4px;border:1px solid #92400e40}
+.info-note{color:var(--blue3);font-size:11px;margin-top:4px;background:#1e3a5f40;padding:4px 8px;border-radius:4px;border:1px solid #1d4ed840}
+
+/* ── EMPTY STATE ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;color:var(--text3);gap:10px}
+.empty-icon{font-size:44px}
+
+/* ── STANDARD NOTE ── */
+.std-note{color:var(--text3);font-size:10px;text-align:center;margin-top:10px;line-height:1.8}
+
+/* ── FOOTER ── */
+.footer{
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:8px 16px;display:flex;justify-content:space-between;
+  align-items:center;font-size:10px;color:var(--text3);
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
+  flex-wrap:wrap;gap:4px;
+}
+.footer span{color:var(--blue2)}
+
+/* ── BADGE ── */
+.brand-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:20px;font-weight:700;font-size:12px;
+  color:#fff;margin-bottom:12px;
+}
+
+/* ── YES/NO btns ── */
+.yn-row{display:flex;gap:8px}
+.yn-btn{
+  flex:1;background:var(--card2);border:1px solid var(--border);
+  color:var(--text2);padding:8px;border-radius:6px;
+  cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;
+  transition:.2s;
+}
+.yn-btn.yes.active{background:#065f46;border-color:var(--green);color:var(--green)}
+.yn-btn.no.active{background:#7f1d1d;border-color:var(--red);color:var(--red)}
+
+/* hide section */
+.hidden{display:none!important}
+
+/* ── PRINT ── */
+@media print{
+  .header,.tabs,.footer,.export-row,.vis-controls,.hdr-btns{display:none!important}
+  body{background:#fff;color:#000}
+  .card{border:1px solid #ccc;background:#fff}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo-wrap">
+    <div class="logo-box">
+      <span>EJAF</span>
+      <small>Technology</small>
+    </div>
+    <div>
+      <div class="app-name" id="h-title">حاسبة الأرضيات المرتفعة</div>
+      <div class="app-sub" id="h-sub">نظام احترافي لحساب الكميات</div>
+    </div>
+  </div>
+  <div class="hdr-btns">
+    <button class="lang-btn" onclick="toggleLang()">English</button>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab(0,this)">📋 <span class="t-project">المشروع</span></button>
+  <button class="tab-btn" onclick="showTab(1,this)">🔢 <span class="t-calc">الحسابات</span></button>
+  <button class="tab-btn" onclick="showTab(2,this)">🗺️ <span class="t-visual">التصميم البصري</span></button>
+  <button class="tab-btn" onclick="showTab(3,this)">📊 <span class="t-reports">التقارير</span></button>
+</div>
+
+<!-- ═══════════ TAB 0: PROJECT ═══════════ -->
+<div id="tab0" class="content">
+
+  <!-- Project Info -->
+  <div class="card">
+    <div class="card-title">📋 <span class="t-proj-info">معلومات المشروع</span></div>
+    <div class="form-grid">
+      <div class="fg"><label class="t-proj-name">اسم المشروع</label><input id="f-projname" type="text" placeholder="مشروع مركز البيانات"></div>
+      <div class="fg"><label class="t-client">اسم العميل</label><input id="f-client" type="text" placeholder="شركة ..."></div>
+      <div class="fg"><label class="t-location">الموقع</label><input id="f-location" type="text" placeholder="بغداد، العراق"></div>
+      <div class="fg"><label class="t-eng">اسم المهندس</label><input id="f-eng" type="text" placeholder="م. سوار ..."></div>
+    </div>
+    <div class="fg"><label class="t-date">التاريخ</label><input id="f-date" type="date"></div>
+    <div class="fg"><label class="t-notes">ملاحظات</label><textarea id="f-notes" placeholder="أضف ملاحظات..."></textarea></div>
+  </div>
+
+  <!-- Dimensions -->
+  <div class="card">
+    <div class="card-title">📐 <span class="t-dims">أبعاد الغرفة</span></div>
+    <div class="form-grid">
+      <div class="fg">
+        <label class="t-len">الطول (م)</label>
+        <input id="f-len" type="number" placeholder="10.5" min="0.1" step="0.1" oninput="liveCalc()">
+      </div>
+      <div class="fg">
+        <label class="t-wid">العرض (م)</label>
+        <input id="f-wid" type="number" placeholder="8.0" min="0.1" step="0.1" oninput="liveCalc()">
+      </div>
+    </div>
+    <div class="fg">
+      <label class="t-height">الارتفاع عن الأرض (مم)</label>
+      <input id="f-h" type="number" value="300" min="50" max="1500" step="10" oninput="checkHeight()">
+      <div id="h-warn" class="warn hidden">⚠️ <span class="t-hwarn">الارتفاع أقل من 100مم – تأكد من نوع الأرجل</span></div>
+      <div id="h-note" class="info-note hidden">ℹ️ <span class="t-hnote">الارتفاع فوق 500مم يتطلب Seismic Braces إضافية</span></div>
+    </div>
+
+    <!-- Brand -->
+    <div class="fg">
+      <label class="t-brand">البراند</label>
+      <div class="brand-grid" id="brand-grid"></div>
+    </div>
+
+    <!-- Panel Size -->
+    <div class="fg">
+      <label class="t-psize">حجم البلاطة</label>
+      <div class="size-row">
+        <button class="size-btn active" onclick="setPsize('600',this)">600×600</button>
+        <button class="size-btn" onclick="setPsize('500',this)">500×500</button>
+        <button class="size-btn" onclick="setPsize('610',this)">610×610</button>
+      </div>
+    </div>
+
+    <!-- Waste -->
+    <div class="fg">
+      <label><span class="t-waste">نسبة الهدر:</span> <span class="range-val" id="waste-val">5%</span></label>
+      <div class="range-wrap">
+        <input type="range" id="f-waste" min="3" max="20" value="5" oninput="document.getElementById('waste-val').textContent=this.value+'%';liveCalc()">
+      </div>
+    </div>
+
+    <!-- Ramp -->
+    <div class="fg">
+      <label class="t-ramp-opt">إضافة Ramp للمدخل؟</label>
+      <div class="yn-row">
+        <button class="yn-btn yes" id="ramp-yes" onclick="setRamp(true)">✓ نعم</button>
+        <button class="yn-btn no active" id="ramp-no" onclick="setRamp(false)">✗ لا</button>
+      </div>
+      <div id="ramp-opts" class="ramp-box hidden">
+        <div class="form-grid">
+          <div class="fg">
+            <label class="t-ramp-w">عرض الـ Ramp (مم)</label>
+            <input id="f-rampw" type="number" value="900" min="600" max="2400" step="100" oninput="liveCalc()">
+          </div>
+          <div class="fg">
+            <label class="t-ramp-plating">سماكة الصفيحة العلوية (مم)</label>
+            <input id="f-ramp-plate" type="number" value="4" min="2" max="12" step="1" oninput="liveCalc()">
+          </div>
+          <div class="fg">
+            <label class="t-ramp-angle-size">مقاس الحديد الزاوي (مم)</label>
+            <select id="f-ramp-angle" onchange="liveCalc()">
+              <option value="40x40x4">40×40×4 mm</option>
+              <option value="50x50x5" selected>50×50×5 mm</option>
+              <option value="60x60x6">60×60×6 mm</option>
+              <option value="75x75x6">75×75×6 mm</option>
+              <option value="100x100x8">100×100×8 mm</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="t-ramp-flatbar">مقاس الحديد المسطح (مم)</label>
+            <select id="f-ramp-flat" onchange="liveCalc()">
+              <option value="40x5">40×5 mm</option>
+              <option value="50x6" selected>50×6 mm</option>
+              <option value="60x6">60×6 mm</option>
+              <option value="75x8">75×8 mm</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="t-ramp-paint">نوع الطلاء</label>
+            <select id="f-ramp-paint" onchange="liveCalc()">
+              <option value="galv">غلفنة Galvanizing</option>
+              <option value="epoxy" selected>إيبوكسي Epoxy</option>
+              <option value="paint">دهان أكرليك</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="t-ramp-nonskid">سطح Anti-Skid؟</label>
+            <select id="f-ramp-nonskid" onchange="liveCalc()">
+              <option value="yes" selected>نعم – صفيحة مشققة Checker Plate</option>
+              <option value="no">لا – صفيحة ملساء</option>
+            </select>
+          </div>
+        </div>
+        <div class="ramp-note t-ramp-note">📏 الميل التلقائي وفق المعايير: ≤150مم → 1:8 (BICSI) | &gt;150مم → 1:12 (ADA/ISO)</div>
+        <div class="ramp-note" style="color:var(--blue3);margin-top:4px">🔧 الهيكل: حديد زاوي للإطار + حديد مسطح للدعامات + صفيحة علوية</div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="doCalculate()">🔢 <span class="t-calc-btn">احسب الكميات</span></button>
+  </div>
+</div>
+
+<!-- ═══════════ TAB 1: RESULTS ═══════════ -->
+<div id="tab1" class="content hidden">
+  <div id="results-area">
+    <div class="empty">
+      <div class="empty-icon">🔢</div>
+      <div class="t-no-calc">أدخل الأبعاد وانقر احسب أولاً</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ TAB 2: VISUAL ═══════════ -->
+<div id="tab2" class="content hidden">
+  <div class="card">
+    <div class="card-title">🗺️ <span class="t-visual-title">التصميم البصري للأرضية</span></div>
+
+    <div class="vis-controls">
+      <button class="vis-btn" onclick="document.getElementById('plan-file').click()">📁 <span class="t-upload">رفع المخطط</span></button>
+      <input type="file" id="plan-file" accept=".png,.jpg,.jpeg,.pdf" hidden onchange="loadPlan(this)">
+      <button class="vis-btn" id="draw-btn" onclick="toggleDraw()">✏️ <span class="t-draw">رسم الغرفة</span></button>
+      <button class="vis-btn" onclick="clearDraw()">🗑️ <span class="t-clear">مسح</span></button>
+      <button class="vis-btn" id="grid-btn" onclick="toggleGrid()">⊞ <span class="t-grid">شبكة</span></button>
+      <button class="vis-btn" onclick="zoomCanvas(1.2)">🔍+</button>
+      <button class="vis-btn" onclick="zoomCanvas(0.8)">🔍−</button>
+      <button class="vis-btn" onclick="resetCanvas()">↺</button>
+    </div>
+
+    <!-- Upload hint bar (compact) -->
+    <div id="upload-hint-bar" style="display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px dashed var(--border2);border-radius:8px;padding:10px 14px;margin-bottom:10px;cursor:pointer" onclick="document.getElementById('plan-file').click()">
+      <span style="font-size:22px">📄</span>
+      <div>
+        <div class="t-upload-hint" style="font-size:12px;color:var(--blue3)">اسحب وأفلت أو انقر لرفع مخطط الغرفة (اختياري)</div>
+        <div style="font-size:10px;color:var(--text3)">PNG / JPG — يمكنك الرسم بدون مخطط أيضاً</div>
+      </div>
+    </div>
+
+    <!-- Drawing instructions -->
+    <div id="draw-hint" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:var(--text2);line-height:1.8">
+      <strong style="color:var(--gold)">🖊️ كيف ترسم:</strong><br>
+      ١. اضغط زر <strong style="color:var(--blue3)">✏️ رسم الغرفة</strong><br>
+      ٢. اضغط مطوّلاً على اللوحة واسحب لرسم مستطيل الغرفة<br>
+      ٣. فعّل <strong style="color:var(--blue3)"># شبكة</strong> لعرض توزيع البلاطات<br>
+      ٤. يمكنك رفع مخطط PNG/JPG كخلفية أولاً ثم الرسم عليه
+    </div>
+
+    <div id="canvas-container" class="canvas-wrap" style="min-height:360px">
+      <canvas id="plan-canvas"></canvas>
+    </div>
+
+    <div id="grid-preview-section" style="margin-top:14px">
+      <div style="font-size:11px;color:var(--text2);margin-bottom:6px" class="t-grid-preview">معاينة توزيع البلاطات</div>
+      <div class="grid-preview-wrap">
+        <svg id="grid-svg"></svg>
+      </div>
+      <div id="grid-legend" style="font-size:10px;color:var(--text3);margin-top:6px;text-align:center"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ TAB 3: REPORTS ═══════════ -->
+<div id="tab3" class="content hidden">
+  <div id="reports-area">
+    <div class="empty">
+      <div class="empty-icon">📊</div>
+      <div class="t-no-report">احسب الكميات أولاً</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span>© 2025 EJAF Technology</span>
+  <span>Powered by Siwar</span>
+  <span style="color:var(--text3)">ISO 18384 · EN 12825 · BICSI 002</span>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const BRANDS={
+  MERO:{name:"MERO-TSK",logo:"M",color:"#1a3a7a",wt:10,thick:38.5,cload:3500,dload:20,pload:27000},
+  KNAUF:{name:"KNAUF",logo:"K",color:"#9b1c1c",wt:12,thick:35,cload:3000,dload:18,pload:25000},
+  TATE:{name:"TATE",logo:"T",color:"#065f46",wt:11,thick:36,cload:4000,dload:22,pload:28000},
+  KINGSPAN:{name:"KINGSPAN",logo:"KS",color:"#92400e",wt:9.5,thick:40,cload:3500,dload:20,pload:26000},
+  BLUESCOPE:{name:"BLUESCOPE",logo:"BS",color:"#1e3a8a",wt:10.5,thick:38,cload:3200,dload:19,pload:25500},
+  PORCELANOSA:{name:"PORCELANOSA",logo:"P",color:"#4c1d95",wt:14,thick:40,cload:3800,dload:21,pload:27500}
+};
+const PSIZE={'600':0.6,'500':0.5,'610':0.61};
+let state={lang:'ar',brand:'MERO',psize:'600',ramp:false,results:null,prices:{}};
+let canvas=null,ctx=null,planImg=null,drawing=false,drawStart=null,drawnRoom=null,showGrid=false,canvasZoom=1;
+
+// ═══════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════
+const TR={
+  ar:{
+    't-title':'حاسبة الأرضيات المرتفعة','t-sub':'نظام احترافي لحساب الكميات',
+    't-project':'المشروع','t-calc':'الحسابات','t-visual':'التصميم البصري','t-reports':'التقارير',
+    't-proj-info':'معلومات المشروع','t-proj-name':'اسم المشروع','t-client':'اسم العميل',
+    't-location':'الموقع','t-eng':'اسم المهندس','t-date':'التاريخ','t-notes':'ملاحظات',
+    't-dims':'أبعاد الغرفة','t-len':'الطول (م)','t-wid':'العرض (م)',
+    't-height':'الارتفاع عن الأرض (مم)','t-brand':'البراند','t-psize':'حجم البلاطة',
+    't-waste':'نسبة الهدر:','t-ramp-opt':'إضافة Ramp للمدخل؟',
+    't-ramp-w':'عرض الـ Ramp (مم)','t-ramp-note':'📏 الميل التلقائي: ≤150مم → 1:8 | >150مم → 1:12',
+    't-calc-btn':'احسب الكميات','t-hwarn':'الارتفاع أقل من 100مم – تأكد من نوع الأرجل',
+    't-hnote':'الارتفاع فوق 500مم يتطلب Seismic Braces إضافية',
+    't-no-calc':'أدخل الأبعاد وانقر احسب أولاً',
+    't-visual-title':'التصميم البصري للأرضية','t-upload':'رفع المخطط',
+    't-draw':'رسم الغرفة','t-clear':'مسح','t-grid':'شبكة',
+    't-upload-hint':'اسحب وأفلت أو انقر لرفع المخطط',
+    't-grid-preview':'معاينة توزيع البلاطات',
+    't-no-report':'احسب الكميات أولاً',
+    'item':'البند','qty':'الكمية','unit':'الوحدة','uprice':'سعر الوحدة (اختياري)','total':'الإجمالي',
+    'pcs':'قطعة','ml':'م.ط','m2':'م²',
+    'panels':'البلاطات','pedestals':'الأرجل (Pedestals)','stringers':'Stringers',
+    'edgetrim':'Edge Trim','screws':'مسامير','headplates':'Head Plates',
+    'clips':'Locking Clips','corners':'Corner Trims','seal':'Floor Seal',
+    'seismic':'Seismic Braces','ramp-panels':'بلاطات Ramp','ramp-peds':'أرجل Ramp',
+    'total-area':'المساحة الكلية','brand-specs':'مواصفات البراند',
+    'export-xlsx':'تصدير Excel','export-pdf':'طباعة / PDF',
+    'std':'معايير: ISO 18384 / EN 12825 / BICSI 002',
+    'disclaimer':'* الكميات تشمل نسبة الهدر المحددة',
+    'ramp-title':'مواصفات Ramp الحديدي','ramp-slope':'الميل','ramp-std':'المعيار',
+    'ramp-width':'عرض الـ Ramp','ramp-length':'طول الـ Ramp',
+    'ramp-steel-mat':'مواد الهيكل الحديدي',
+    'ramp-angle':'حديد زاوي Angle Iron','ramp-flat':'حديد مسطح Flat Bar',
+    'ramp-plate':'صفيحة علوية Top Plate','ramp-ribs':'دعامات عرضية Cross Ribs',
+    'ramp-weights':'الأوزان والكميات',
+    'ramp-angle-wt':'وزن الزاوي','ramp-flat-wt':'وزن المسطح','ramp-plate-wt':'وزن الصفيحة',
+    'ramp-total-wt':'الوزن الكلي للحديد','ramp-bolts':'مسامير/براغي M12','ramp-welds':'لحامات (سم خطي)',
+    'ramp-paint':'الطلاء','ramp-angle-size':'مقاس الزاوي','ramp-flatbar':'مقاس المسطح',
+    'ramp-plating':'سماكة الصفيحة','t-ramp-nonskid':'سطح Anti-Skid',
+    'paint-galv':'غلفنة','paint-epoxy':'إيبوكسي','paint-paint':'دهان أكرليك',
+    'yes-checker':'نعم – Checker Plate','no-smooth':'لا – ملساء',
+    'proj-summary':'ملخص المشروع','boq':'جدول الكميات (BOQ)',
+    'lang-btn':'English','dir':'rtl',
+    'wt':'وزن البلاطة','thick':'السماكة','cload':'الحمل المركز','dload':'الحمل الموزع','pload':'حمل الرجل',
+    'total-wt':'الوزن الكلي تقريباً',
+    'grand-total':'المجموع الكلي (اختياري)'
+  },
+  en:{
+    't-title':'Raised Floor Calculator','t-sub':'Professional Quantity Calculator',
+    't-project':'Project','t-calc':'Calculations','t-visual':'Visual Design','t-reports':'Reports',
+    't-proj-info':'Project Information','t-proj-name':'Project Name','t-client':'Client Name',
+    't-location':'Location','t-eng':'Engineer Name','t-date':'Date','t-notes':'Notes',
+    't-dims':'Room Dimensions','t-len':'Length (m)','t-wid':'Width (m)',
+    't-height':'Floor Height (mm)','t-brand':'Brand','t-psize':'Panel Size',
+    't-waste':'Waste %:','t-ramp-opt':'Add Entry Ramp?',
+    't-ramp-w':'Ramp Width (mm)','t-ramp-note':'📏 Auto slope: ≤150mm → 1:8 | >150mm → 1:12',
+    't-calc-btn':'Calculate Quantities','t-hwarn':'Height < 100mm – verify pedestal type',
+    't-hnote':'Height > 500mm requires additional Seismic Braces',
+    't-no-calc':'Enter dimensions and calculate first',
+    't-visual-title':'Floor Visual Design','t-upload':'Upload Plan',
+    't-draw':'Draw Room','t-clear':'Clear','t-grid':'Grid',
+    't-upload-hint':'Drag & drop or click to upload floor plan',
+    't-grid-preview':'Panel Grid Preview',
+    't-no-report':'Calculate quantities first',
+    'item':'Item','qty':'Quantity','unit':'Unit','uprice':'Unit Price (optional)','total':'Total',
+    'pcs':'pcs','ml':'LM','m2':'m²',
+    'panels':'Panels','pedestals':'Pedestals','stringers':'Stringers',
+    'edgetrim':'Edge Trim','screws':'Screws','headplates':'Head Plates',
+    'clips':'Locking Clips','corners':'Corner Trims','seal':'Floor Seal',
+    'seismic':'Seismic Braces','ramp-panels':'Ramp Panels','ramp-peds':'Ramp Pedestals',
+    'total-area':'Total Area','brand-specs':'Brand Specifications',
+    'export-xlsx':'Export Excel','export-pdf':'Print / PDF',
+    'std':'Standards: ISO 18384 / EN 12825 / BICSI 002',
+    'disclaimer':'* Quantities include specified waste percentage',
+    'ramp-title':'Steel Entry Ramp Specifications','ramp-slope':'Slope','ramp-std':'Standard',
+    'ramp-width':'Ramp Width','ramp-length':'Ramp Length',
+    'ramp-steel-mat':'Steel Frame Materials',
+    'ramp-angle':'Angle Iron','ramp-flat':'Flat Bar',
+    'ramp-plate':'Top Steel Plate','ramp-ribs':'Cross Ribs',
+    'ramp-weights':'Weights & Quantities',
+    'ramp-angle-wt':'Angle Iron Weight','ramp-flat-wt':'Flat Bar Weight','ramp-plate-wt':'Plate Weight',
+    'ramp-total-wt':'Total Steel Weight','ramp-bolts':'Bolts M12','ramp-welds':'Welds (linear cm)',
+    'ramp-paint':'Paint/Finish','ramp-angle-size':'Angle Size','ramp-flatbar':'Flat Bar Size',
+    'ramp-plating':'Plate Thickness','t-ramp-nonskid':'Anti-Skid Surface',
+    'paint-galv':'Hot-Dip Galvanizing','paint-epoxy':'Epoxy Coating','paint-paint':'Acrylic Paint',
+    'yes-checker':'Yes – Checker Plate','no-smooth':'No – Smooth',
+    'proj-summary':'Project Summary','boq':'Bill of Quantities (BOQ)',
+    'lang-btn':'عربي','dir':'ltr',
+    'wt':'Panel Weight','thick':'Thickness','cload':'Concentrated Load','dload':'Distributed Load','pload':'Pedestal Load',
+    'total-wt':'Approximate Total Weight',
+    'grand-total':'Grand Total (optional)'
+  }
+};
+function t(k){return TR[state.lang][k]||k}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+window.onload=()=>{
+  document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
+  buildBrandGrid();
+  canvas=document.getElementById('plan-canvas');
+  ctx=canvas.getContext('2d');
+  canvas.addEventListener('mousedown',canvasMD);
+  canvas.addEventListener('mousemove',canvasMM);
+  canvas.addEventListener('mouseup',canvasMU);
+  canvas.addEventListener('touchstart',canvasTD,{passive:false});
+  canvas.addEventListener('touchmove',canvasTM,{passive:false});
+  canvas.addEventListener('touchend',canvasTU);
+  // init blank canvas
+  initBlankCanvas();
+};
+
+function buildBrandGrid(){
+  const g=document.getElementById('brand-grid');
+  g.innerHTML='';
+  Object.entries(BRANDS).forEach(([k,b])=>{
+    const btn=document.createElement('button');
+    btn.className='brand-btn'+(k===state.brand?' active':'');
+    btn.style.background=k===state.brand?b.color:'var(--card2)';
+    btn.style.borderColor=k===state.brand?b.color:'var(--border)';
+    btn.innerHTML=`<span class="bn">${b.logo}</span><span class="bs">${b.name}</span>`;
+    btn.onclick=()=>setBrand(k);
+    g.appendChild(btn);
+  });
+}
+function setBrand(k){
+  state.brand=k;buildBrandGrid();liveCalc();
+}
+function setPsize(k,el){
+  state.psize=k;
+  document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');liveCalc();
+}
+function setRamp(v){
+  state.ramp=v;
+  document.getElementById('ramp-yes').classList.toggle('active',v);
+  document.getElementById('ramp-no').classList.toggle('active',!v);
+  document.getElementById('ramp-opts').classList.toggle('hidden',!v);
+}
+function checkHeight(){
+  const h=parseFloat(document.getElementById('f-h').value)||0;
+  document.getElementById('h-warn').classList.toggle('hidden',!(h>0&&h<100));
+  document.getElementById('h-note').classList.toggle('hidden',!(h>500));
+  liveCalc();
+}
+
+// ═══════════════════════════════════════════════════════════
+// CALCULATION
+// ═══════════════════════════════════════════════════════════
+function liveCalc(){
+  const len=parseFloat(document.getElementById('f-len').value);
+  const wid=parseFloat(document.getElementById('f-wid').value);
+  if(isNaN(len)||isNaN(wid)||len<=0||wid<=0)return;
+  doCalculate(true);
+}
+
+function doCalculate(silent=false){
+  const len=parseFloat(document.getElementById('f-len').value);
+  const wid=parseFloat(document.getElementById('f-wid').value);
+  const hMM=parseFloat(document.getElementById('f-h').value)||300;
+  const waste=parseFloat(document.getElementById('f-waste').value)||5;
+  const rampW=parseFloat(document.getElementById('f-rampw').value)||900;
+  const pm=PSIZE[state.psize];
+  const wasteFactor=1+waste/100;
+  const area=len*wid;
+  const areaWaste=area*wasteFactor;
+  const cols=Math.ceil(len/pm);
+  const rows=Math.ceil(wid/pm);
+  const panels=Math.ceil(areaWaste/(pm*pm));
+  const peds=(cols+1)*(rows+1);
+  const strs=cols*(rows+1)+rows*(cols+1);
+  const perim=2*(len+wid);
+  const edgeTrim=Math.ceil(perim*wasteFactor);
+  const screws=panels*4;
+  const hPlates=peds;
+  const clips=panels*4;
+  const cornTrims=4+Math.ceil(perim/3);
+  const seal=Math.ceil(perim*1.05);
+  const seismic=hMM>500?Math.ceil(peds/4):0;
+  let rampData=null;
+  if(state.ramp){
+    const slope=hMM<=150?8:12;
+    const rLenMm=hMM*slope;
+    const rLenM=rLenMm/1000;
+    const rWidM=rampW/1000;
+    // Steel ramp calculations
+    const angleSel=document.getElementById('f-ramp-angle').value; // e.g. "50x50x5"
+    const flatSel=document.getElementById('f-ramp-flat').value;   // e.g. "50x6"
+    const plateTmm=parseFloat(document.getElementById('f-ramp-plate').value)||4;
+    const paintType=document.getElementById('f-ramp-paint').value;
+    const nonskid=document.getElementById('f-ramp-nonskid').value==='yes';
+    // Angle iron kg/m lookup (approximate)
+    const angleWt={'40x40x4':2.42,'50x50x5':3.77,'60x60x6':5.42,'75x75x6':6.85,'100x100x8':12.2};
+    const flatWt={'40x5':1.57,'50x6':2.36,'60x6':2.83,'75x8':4.71};
+    const aWtM=angleWt[angleSel]||3.77;
+    const fWtM=flatWt[flatSel]||2.36;
+    // Frame: 2 side rails + cross ribs every 400mm + 2 end rails
+    const sideRails=2; // along ramp length
+    const crossRibSpacing=0.4; // 400mm OC per EN 1337/BICSI
+    const numCrossRibs=Math.floor(rLenM/crossRibSpacing)+1;
+    const angleLength_m=sideRails*rLenM + numCrossRibs*rWidM;
+    // Flat bar: longitudinal stiffeners every 200mm
+    const flatSpacing=0.2;
+    const numFlats=Math.floor(rWidM/flatSpacing)+1;
+    const flatLength_m=numFlats*rLenM;
+    // Top plate: steel sheet
+    const plateArea_m2=rLenM*rWidM;
+    const steelDensity=7850; // kg/m3
+    const plateTm=plateTmm/1000;
+    const plateWt_kg=plateArea_m2*plateTm*steelDensity;
+    // Weights
+    const angleWt_kg=angleLength_m*aWtM;
+    const flatWt_kg=flatLength_m*fWtM;
+    const totalSteelWt=Math.round((angleWt_kg+flatWt_kg+plateWt_kg)*1.05); // +5% welds/bolts
+    // Bolts: M12 every 200mm on perimeter
+    const perimR=2*(rLenM+rWidM);
+    const bolts=Math.ceil(perimR/0.2)*2;
+    // Welds: linear cm
+    const weldsCm=Math.round((angleLength_m+flatLength_m)*100*0.8);
+    rampData={
+      widthMm:rampW,lengthMm:Math.round(rLenMm),slope:`1:${slope}`,
+      slopeStd:hMM<=150?'BICSI 002':'ADA / ISO 21542',
+      angleSel,flatSel,plateTmm,paintType,nonskid,
+      angleLength_m:angleLength_m.toFixed(2),
+      flatLength_m:flatLength_m.toFixed(2),
+      plateArea_m2:plateArea_m2.toFixed(2),
+      angleWt_kg:angleWt_kg.toFixed(1),
+      flatWt_kg:flatWt_kg.toFixed(1),
+      plateWt_kg:plateWt_kg.toFixed(1),
+      totalSteelWt,
+      numCrossRibs,numFlats,bolts,weldsCm,
+      aWtM,fWtM
+    };
+  }
+  const b=BRANDS[state.brand];
+  state.results={
+    area:area.toFixed(2),areaWaste:areaWaste.toFixed(2),
+    panels,peds,strs,edgeTrim,screws,hPlates,clips,cornTrims,seal,seismic,
+    ramp:rampData,brand:b,brandKey:state.brand,
+    totalWeight:(panels*b.wt).toFixed(1),
+    cols,rows,pm,h:hMM,waste,len,wid
+  };
+  renderResults();
+  renderReports();
+  renderGridPreview();
+  if(!silent)showTab(1,document.querySelectorAll('.tab-btn')[1]);
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER RESULTS
+// ═══════════════════════════════════════════════════════════
+function renderResults(){
+  const r=state.results;
+  if(!r){return;}
+  const b=r.brand;
+  const kpis=[
+    {icon:'📐',val:`${r.area} ${t('m2')}`,lbl:t('total-area'),color:'#2563eb'},
+    {icon:'🟦',val:`${r.panels}`,lbl:t('panels'),color:'#10b981'},
+    {icon:'🦵',val:`${r.peds}`,lbl:t('pedestals'),color:'#f59e0b'},
+    {icon:'🔩',val:`${r.strs}`,lbl:t('stringers'),color:'#8b5cf6'},
+    {icon:'📏',val:`${r.edgeTrim} ${t('ml')}`,lbl:t('edgetrim'),color:'#ef4444'},
+    {icon:'🔧',val:`${r.screws}`,lbl:t('screws'),color:'#06b6d4'},
+  ];
+
+  const boqRows=getBOQRows(r);
+
+  const html=`
+  <div class="brand-badge" style="background:${b.color}">${b.name} · ${state.psize}×${state.psize}mm · ${t('t-waste')} ${r.waste}%</div>
+
+  <div class="kpi-grid">
+    ${kpis.map(k=>`<div class="kpi-card" style="border-top-color:${k.color}">
+      <div class="kpi-icon">${k.icon}</div>
+      <div class="kpi-val" style="color:${k.color}">${k.val}</div>
+      <div class="kpi-label">${k.lbl}</div>
+    </div>`).join('')}
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔩 ${t('boq')}</div>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>${t('item')}</th><th>${t('qty')}</th><th>${t('unit')}</th>
+        <th>${t('uprice')}</th><th>${t('total')}</th>
+      </tr></thead>
+      <tbody>
+        ${boqRows.map((row,i)=>`<tr>
+          <td>${row[0]}</td>
+          <td>${row[1]}</td><td>${row[2]}</td>
+          <td><input class="price-input" type="number" id="pr-${i}" value="${state.prices[i]||''}" 
+              oninput="updatePrice(${i})" placeholder="0.00" min="0"></td>
+          <td id="tot-${i}">${state.prices[i]?Number(state.prices[i]*row[1]).toLocaleString():''}</td>
+        </tr>`).join('')}
+        <tr class="total-row">
+          <td colspan="3">${t('grand-total')}</td>
+          <td></td><td id="grand-total">—</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  ${r.ramp?`<div class="card" style="border-color:#10b98140">
+    <div class="card-title">🔧 ${t('ramp-title')}</div>
+    <!-- Dimensions row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+      <div class="ramp-item"><div class="rv">${r.ramp.widthMm} mm</div><div class="rl">${t('ramp-width')}</div></div>
+      <div class="ramp-item"><div class="rv">${r.ramp.lengthMm} mm</div><div class="rl">${t('ramp-length')}</div></div>
+      <div class="ramp-item"><div class="rv">${r.ramp.slope}</div><div class="rl">${t('ramp-slope')} · ${r.ramp.slopeStd}</div></div>
+    </div>
+    <!-- Steel materials -->
+    <div style="background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:10px">
+      <div style="color:var(--gold);font-weight:700;font-size:12px;margin-bottom:8px">⚙️ ${t('ramp-steel-mat')}</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+        <div class="ramp-item"><div class="rv">${r.ramp.angleSel} mm</div><div class="rl">${t('ramp-angle')} · ${r.ramp.angleLength_m} م.ط</div></div>
+        <div class="ramp-item"><div class="rv">${r.ramp.flatSel} mm</div><div class="rl">${t('ramp-flat')} · ${r.ramp.flatLength_m} م.ط</div></div>
+        <div class="ramp-item"><div class="rv">${r.ramp.plateTmm} mm</div><div class="rl">${t('ramp-plate')} · ${r.ramp.plateArea_m2} م²</div></div>
+        <div class="ramp-item"><div class="rv">${r.ramp.numCrossRibs} ${t('pcs')}</div><div class="rl">${t('ramp-ribs')}</div></div>
+      </div>
+    </div>
+    <!-- Weights & quantities -->
+    <div style="background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:10px">
+      <div style="color:var(--blue3);font-weight:700;font-size:12px;margin-bottom:8px">⚖️ ${t('ramp-weights')}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <div class="ramp-item"><div class="rv" style="color:var(--gold)">${r.ramp.angleWt_kg} kg</div><div class="rl">${t('ramp-angle-wt')}</div></div>
+        <div class="ramp-item"><div class="rv" style="color:var(--gold)">${r.ramp.flatWt_kg} kg</div><div class="rl">${t('ramp-flat-wt')}</div></div>
+        <div class="ramp-item"><div class="rv" style="color:var(--gold)">${r.ramp.plateWt_kg} kg</div><div class="rl">${t('ramp-plate-wt')}</div></div>
+        <div class="ramp-item"><div class="rv" style="color:var(--red);font-size:16px">${r.ramp.totalSteelWt} kg</div><div class="rl">${t('ramp-total-wt')}</div></div>
+        <div class="ramp-item"><div class="rv">${r.ramp.bolts} ${t('pcs')}</div><div class="rl">${t('ramp-bolts')}</div></div>
+        <div class="ramp-item"><div class="rv">${r.ramp.weldsCm} cm</div><div class="rl">${t('ramp-welds')}</div></div>
+      </div>
+    </div>
+    <!-- Finish -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px">
+      <span style="background:var(--card2);padding:4px 10px;border-radius:20px;border:1px solid var(--border)">
+        🎨 ${t('ramp-paint')}: ${t('paint-'+r.ramp.paintType)}
+      </span>
+      <span style="background:var(--card2);padding:4px 10px;border-radius:20px;border:1px solid var(--border)">
+        🔲 Anti-Skid: ${r.ramp.nonskid?t('yes-checker'):t('no-smooth')}
+      </span>
+      <span style="background:var(--card2);padding:4px 10px;border-radius:20px;border:1px solid var(--border)">
+        📜 ${r.ramp.slopeStd}
+      </span>
+    </div>
+  </div>`:''}
+
+  ${r.seismic>0?`<div class="card" style="border-color:#f59e0b40">
+    <div style="color:var(--gold);font-weight:700">⚠️ Seismic Braces: ${r.seismic} ${t('pcs')}</div>
+    <div style="color:var(--text3);font-size:11px;margin-top:4px">${t('t-hnote')}</div>
+  </div>`:''}
+
+  <div class="card">
+    <div class="card-title">📋 ${t('brand-specs')}</div>
+    <div class="specs-grid">
+      <div class="spec-item"><div class="spec-val">${b.wt} kg</div><div class="spec-lbl">${t('wt')}</div></div>
+      <div class="spec-item"><div class="spec-val">${b.thick} mm</div><div class="spec-lbl">${t('thick')}</div></div>
+      <div class="spec-item"><div class="spec-val">${b.cload} N</div><div class="spec-lbl">${t('cload')}</div></div>
+      <div class="spec-item"><div class="spec-val">${b.dload} KN/m²</div><div class="spec-lbl">${t('dload')}</div></div>
+      <div class="spec-item"><div class="spec-val">${b.pload} N</div><div class="spec-lbl">${t('pload')}</div></div>
+      <div class="spec-item"><div class="spec-val">${r.totalWeight} kg</div><div class="spec-lbl">${t('total-wt')}</div></div>
+    </div>
+  </div>
+
+  <div class="export-row">
+    <button class="export-btn btn-xlsx" onclick="exportXLSX()">📊 ${t('export-xlsx')}</button>
+    <button class="export-btn btn-pdf" onclick="exportPDF()">📄 ${t('export-pdf')}</button>
+  </div>
+
+  <div class="std-note">📜 ${t('std')}<br>* ${t('disclaimer')}</div>
+  `;
+  document.getElementById('results-area').innerHTML=html;
+  updateGrandTotal();
+}
+
+function getBOQRows(r){
+  const rows=[
+    [t('panels'),r.panels,t('pcs')],
+    [t('pedestals'),r.peds,t('pcs')],
+    [t('stringers'),r.strs,t('pcs')],
+    [t('edgetrim'),r.edgeTrim,t('ml')],
+    [t('screws'),r.screws,t('pcs')],
+    [t('headplates'),r.hPlates,t('pcs')],
+    [t('clips'),r.clips,t('pcs')],
+    [t('corners'),r.cornTrims,t('pcs')],
+    [t('seal'),r.seal,t('ml')],
+  ];
+  if(r.seismic>0)rows.push(['Seismic Braces',r.seismic,t('pcs')]);
+  if(r.ramp){
+    rows.push([t('ramp-angle')+' ('+r.ramp.angleSel+')',r.ramp.angleLength_m,t('ml')]);
+    rows.push([t('ramp-flat')+' ('+r.ramp.flatSel+')',r.ramp.flatLength_m,t('ml')]);
+    rows.push([t('ramp-plate')+' '+r.ramp.plateTmm+'mm',r.ramp.plateArea_m2,t('m2')]);
+    rows.push([t('ramp-bolts'),r.ramp.bolts,t('pcs')]);
+    rows.push([t('ramp-total-wt'),r.ramp.totalSteelWt,'kg']);
+  }
+  return rows;
+}
+
+function updatePrice(i){
+  const r=state.results;if(!r)return;
+  const rows=getBOQRows(r);
+  const p=parseFloat(document.getElementById('pr-'+i).value)||0;
+  state.prices[i]=p;
+  const qty=rows[i][1];
+  const tot=p?Number(p*qty).toLocaleString():'';
+  document.getElementById('tot-'+i).textContent=tot;
+  updateGrandTotal();
+}
+function updateGrandTotal(){
+  const r=state.results;if(!r)return;
+  const rows=getBOQRows(r);
+  let grand=0;let hasAny=false;
+  rows.forEach((_,i)=>{
+    const p=parseFloat(document.getElementById('pr-'+i)?.value)||0;
+    if(p){grand+=p*rows[i][1];hasAny=true;}
+  });
+  const el=document.getElementById('grand-total');
+  if(el)el.textContent=hasAny?grand.toLocaleString():'—';
+}
+
+// ═══════════════════════════════════════════════════════════
+// REPORTS TAB
+// ═══════════════════════════════════════════════════════════
+function renderReports(){
+  const r=state.results;
+  if(!r){return;}
+  const html=`
+  <div class="card">
+    <div class="card-title">📊 ${t('proj-summary')}</div>
+    <div style="background:var(--bg2);border-radius:8px;padding:14px">
+      ${[
+        [t('t-proj-name'),document.getElementById('f-projname').value||'—'],
+        [t('t-client'),document.getElementById('f-client').value||'—'],
+        [t('t-location'),document.getElementById('f-location').value||'—'],
+        [t('t-eng'),document.getElementById('f-eng').value||'—'],
+        [t('t-date'),document.getElementById('f-date').value||'—'],
+        [t('total-area'),`${r.area} ${t('m2')}`],
+        [t('panels'),`${r.panels} ${t('pcs')}`],
+        [t('pedestals'),`${r.peds} ${t('pcs')}`],
+        [t('t-brand'),r.brand.name],
+      ].map(([k,v])=>`<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:5px 0;font-size:13px">
+        <span style="color:var(--text3)">${k}</span><span style="font-weight:600">${v}</span>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div class="export-row">
+    <button class="export-btn btn-xlsx" onclick="exportXLSX()">📊 ${t('export-xlsx')}</button>
+    <button class="export-btn btn-pdf" onclick="exportPDF()">📄 ${t('export-pdf')}</button>
+  </div>
+  <div class="std-note">📜 ${t('std')}<br>* ${t('disclaimer')}</div>
+  `;
+  document.getElementById('reports-area').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXPORT XLSX
+// ═══════════════════════════════════════════════════════════
+function exportXLSX(){
+  const r=state.results;if(!r)return;
+  const rows=getBOQRows(r);
+  const pname=document.getElementById('f-projname').value||'Project';
+  const data=[
+    ['EJAF Technology – Raised Floor Calculator','','','',''],
+    ['Powered by Siwar','','','',''],
+    [''],
+    [t('t-proj-name'),pname,'',t('t-client'),document.getElementById('f-client').value||''],
+    [t('t-eng'),document.getElementById('f-eng').value||'','',t('t-date'),document.getElementById('f-date').value||''],
+    [t('t-location'),document.getElementById('f-location').value||'','','',''],
+    [''],
+    [t('item'),t('qty'),t('unit'),t('uprice'),t('total')],
+    ...rows.map((row,i)=>{
+      const p=state.prices[i]||'';
+      return [row[0],row[1],row[2],p,p?p*row[1]:''];
+    }),
+    [''],
+    [t('grand-total'),'','','',Object.keys(state.prices).reduce((s,i)=>{
+      const qty=rows[i]?rows[i][1]:0;
+      return s+(state.prices[i]||0)*qty;
+    },0)||''],
+    [''],
+    [r.brand.name+' – '+t('brand-specs'),'','','',''],
+    [t('wt'),r.brand.wt+' kg','',t('thick'),r.brand.thick+' mm'],
+    [t('cload'),r.brand.cload+' N','',t('dload'),r.brand.dload+' KN/m²'],
+    [t('pload'),r.brand.pload+' N','',t('total-wt'),r.totalWeight+' kg'],
+    [''],
+    ['* '+t('disclaimer'),'','','',''],
+    [t('std'),'','','',''],
+  ];
+  if(r.ramp){
+    data.push(['']);
+    data.push([t('ramp-title'),'','','','']);
+    data.push(['Width',r.ramp.widthMm+' mm','','Length',r.ramp.lengthMm+' mm']);
+    data.push([t('ramp-slope'),r.ramp.slope,'','Standard',r.ramp.slopeStd]);
+    data.push([t('ramp-angle')+' ('+r.ramp.angleSel+')',r.ramp.angleLength_m+' m',t('ml'),r.ramp.aWtM+' kg/m',r.ramp.angleWt_kg+' kg']);
+    data.push([t('ramp-flat')+' ('+r.ramp.flatSel+')',r.ramp.flatLength_m+' m',t('ml'),r.ramp.fWtM+' kg/m',r.ramp.flatWt_kg+' kg']);
+    data.push([t('ramp-plate')+' '+r.ramp.plateTmm+'mm',r.ramp.plateArea_m2+' m²',t('m2')+'','',r.ramp.plateWt_kg+' kg']);
+    data.push([t('ramp-bolts'),r.ramp.bolts,t('pcs'),'','']);
+    data.push([t('ramp-total-wt'),r.ramp.totalSteelWt+' kg','','Anti-Skid',r.ramp.nonskid?'Checker Plate':'Smooth']);
+    data.push([t('ramp-paint')+':',r.ramp.paintType,'','','']);
+  }
+  const ws=XLSX.utils.aoa_to_sheet(data);
+  ws['!cols']=[{wch:30},{wch:12},{wch:10},{wch:20},{wch:16}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,'BOQ',ws);
+  XLSX.writeFile(wb,`EJAF_RaisedFloor_${pname.replace(/\s/g,'_')}.xlsx`);
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXPORT PDF (print dialog)
+// ═══════════════════════════════════════════════════════════
+function exportPDF(){
+  const r=state.results;if(!r)return;
+  const rows=getBOQRows(r);
+  const pname=document.getElementById('f-projname').value||'—';
+  const isAr=state.lang==='ar';
+  const dir=isAr?'rtl':'ltr';
+  const w=window.open('','_blank','width=900,height=700');
+  w.document.write(`<!DOCTYPE html><html dir="${dir}" lang="${state.lang}">
+<head><meta charset="UTF-8"><title>EJAF – ${pname}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo','Segoe UI',sans-serif;background:#fff;color:#1e293b;font-size:12px}
+.hdr{background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff;padding:20px 24px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:26px;font-weight:900;color:#3b82f6;letter-spacing:3px;line-height:1}
+.logo small{display:block;font-size:9px;color:#93c5fd;letter-spacing:1px;font-weight:400}
+.powered{font-size:10px;color:#60a5fa;margin-top:4px}
+.title-sec{background:#f8fafc;padding:14px 24px;border-left:4px solid #2563eb}
+.badge{display:inline-block;background:${r.brand.color};color:#fff;padding:3px 12px;border-radius:20px;font-weight:700;font-size:11px;margin-bottom:6px}
+.ptitle{font-size:17px;font-weight:900;color:#1e293b}
+.psub{color:#64748b;font-size:11px;margin-top:3px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;padding:12px 24px;border-bottom:1px solid #e2e8f0}
+.ii{padding:4px 0;display:flex;gap:8px;font-size:12px}
+.il{color:#64748b;min-width:110px}
+.iv{font-weight:600}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 24px}
+.kpi{border:1px solid #e2e8f0;border-radius:6px;padding:10px;text-align:center}
+.kv{font-size:18px;font-weight:900;color:#2563eb}
+.kl{color:#64748b;font-size:10px;margin-top:3px}
+.sec-title{background:#1e293b;color:#fff;padding:7px 24px;font-weight:700;font-size:12px}
+table{width:100%;border-collapse:collapse}
+th{background:#2563eb;color:#fff;padding:7px 12px;text-align:${isAr?'right':'left'};font-size:11px}
+td{padding:6px 12px;border-bottom:1px solid #f1f5f9;font-size:12px}
+tr:nth-child(even) td{background:#f8fafc}
+.tot-row td{font-weight:700;background:#f0fdf4!important;color:#166534}
+.ramp-sec{margin:0 24px 14px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px;font-size:12px}
+.std{padding:8px 24px;background:#fefce8;color:#854d0e;font-size:10px}
+.footer{background:#0f172a;color:#475569;padding:10px 24px;display:flex;justify-content:space-between;font-size:10px;margin-top:20px}
+@media print{@page{margin:10mm}}
+</style></head><body>
+<div class="hdr">
+  <div><div class="logo">EJAF<small>Technology</small></div><div class="powered">Powered by Siwar</div></div>
+  <div style="text-align:${isAr?'left':'right'}">
+    <div style="font-size:15px;font-weight:700">${t('t-title')}</div>
+    <div style="color:#94a3b8;font-size:10px">${t('t-sub')}</div>
+    <div style="color:#60a5fa;font-size:10px;margin-top:3px">${document.getElementById('f-date').value}</div>
+  </div>
+</div>
+<div class="title-sec">
+  <div class="badge">${r.brand.name}</div>
+  <div class="ptitle">${pname}</div>
+  <div class="psub">${document.getElementById('f-client').value?t('t-client')+': '+document.getElementById('f-client').value:''} ${document.getElementById('f-location').value?'| '+document.getElementById('f-location').value:''}</div>
+</div>
+<div class="info-grid">
+  <div class="ii"><span class="il">${t('t-eng')}:</span><span class="iv">${document.getElementById('f-eng').value||'—'}</span></div>
+  <div class="ii"><span class="il">${t('t-date')}:</span><span class="iv">${document.getElementById('f-date').value}</span></div>
+  <div class="ii"><span class="il">${t('t-len')}:</span><span class="iv">${r.len} m</span></div>
+  <div class="ii"><span class="il">${t('t-wid')}:</span><span class="iv">${r.wid} m</span></div>
+  <div class="ii"><span class="il">${t('t-height')}:</span><span class="iv">${r.h} mm</span></div>
+  <div class="ii"><span class="il">${t('t-psize')}:</span><span class="iv">${state.psize}×${state.psize} mm</span></div>
+  <div class="ii"><span class="il">${t('t-waste')}:</span><span class="iv">${r.waste}%</span></div>
+  <div class="ii"><span class="il">${t('total-area')}:</span><span class="iv">${r.area} ${t('m2')}</span></div>
+</div>
+<div class="kpi-row">
+  <div class="kpi"><div class="kv">${r.area} ${t('m2')}</div><div class="kl">${t('total-area')}</div></div>
+  <div class="kpi"><div class="kv">${r.panels}</div><div class="kl">${t('panels')}</div></div>
+  <div class="kpi"><div class="kv">${r.peds}</div><div class="kl">${t('pedestals')}</div></div>
+</div>
+<div class="sec-title">📋 ${t('boq')}</div>
+<table><thead><tr><th>${t('item')}</th><th>${t('qty')}</th><th>${t('unit')}</th><th>${t('uprice')}</th><th>${t('total')}</th></tr></thead>
+<tbody>
+${rows.map((row,i)=>{
+  const p=state.prices[i]||'';
+  const tot=p?Number(p*row[1]).toLocaleString():'';
+  return `<tr><td>${row[0]}</td><td><strong>${row[1]}</strong></td><td>${row[2]}</td><td>${p||''}</td><td>${tot}</td></tr>`;
+}).join('')}
+${(()=>{
+  let g=Object.keys(state.prices).reduce((s,i)=>{
+    const qty=rows[i]?rows[i][1]:0;return s+(state.prices[i]||0)*qty;},0);
+  return g?`<tr class="tot-row"><td colspan="3">${t('grand-total')}</td><td></td><td>${g.toLocaleString()}</td></tr>`:'';
+})()}
+</tbody></table>
+${r.ramp?`<div style="height:14px"></div><div class="sec-title">🔧 ${t('ramp-title')}</div>
+<div class="ramp-sec">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
+    <div><strong>Width:</strong> ${r.ramp.widthMm}mm</div>
+    <div><strong>Length:</strong> ${r.ramp.lengthMm}mm</div>
+    <div><strong>Slope:</strong> ${r.ramp.slope} (${r.ramp.slopeStd})</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:11px">
+    <div>${t('ramp-angle')} (${r.ramp.angleSel}): <strong>${r.ramp.angleLength_m} m · ${r.ramp.angleWt_kg} kg</strong></div>
+    <div>${t('ramp-flat')} (${r.ramp.flatSel}): <strong>${r.ramp.flatLength_m} m · ${r.ramp.flatWt_kg} kg</strong></div>
+    <div>${t('ramp-plate')} ${r.ramp.plateTmm}mm: <strong>${r.ramp.plateArea_m2} m² · ${r.ramp.plateWt_kg} kg</strong></div>
+    <div>${t('ramp-total-wt')}: <strong>${r.ramp.totalSteelWt} kg</strong></div>
+    <div>${t('ramp-bolts')}: <strong>${r.ramp.bolts} pcs</strong></div>
+    <div>${t('ramp-welds')}: <strong>${r.ramp.weldsCm} cm</strong></div>
+    <div>${t('ramp-paint')}: <strong>${r.ramp.paintType}</strong></div>
+    <div>Anti-Skid: <strong>${r.ramp.nonskid?'Checker Plate':'Smooth'}</strong></div>
+  </div>
+</div>`:''}
+${document.getElementById('f-notes').value?`<div style="padding:10px 24px;background:#f8fafc;font-size:12px"><strong>${t('t-notes')}:</strong> ${document.getElementById('f-notes').value}</div>`:''}
+<div class="std">📜 ${t('std')} &nbsp;|&nbsp; * ${t('disclaimer')}</div>
+<div class="footer"><span>© 2025 EJAF Technology</span><span>Powered by Siwar</span><span>ISO 18384 | EN 12825 | BICSI 002</span></div>
+<script>window.onload=()=>{window.print()}<\/script>
+</body></html>`);
+  w.document.close();
+}
+
+// ═══════════════════════════════════════════════════════════
+// GRID PREVIEW SVG
+// ═══════════════════════════════════════════════════════════
+function renderGridPreview(){
+  const r=state.results;if(!r)return;
+  const svg=document.getElementById('grid-svg');
+  const maxW=Math.min(window.innerWidth-40,600);
+  const maxH=280;
+  const cellW=Math.min(Math.floor(maxW/r.cols),Math.floor(maxH/r.rows),28);
+  const cellH=cellW;
+  const W=r.cols*cellW;const H=r.rows*cellH;
+  svg.setAttribute('width',W+1);svg.setAttribute('height',H+1);
+  svg.setAttribute('viewBox',`0 0 ${W+1} ${H+1}`);
+  let s='';
+  for(let row=0;row<r.rows;row++){
+    for(let col=0;col<r.cols;col++){
+      s+=`<rect x="${col*cellW+.5}" y="${row*cellH+.5}" width="${cellW-1}" height="${cellH-1}" fill="#1e3a8a" stroke="#3b82f6" stroke-width=".5"/>`;
+    }
+  }
+  // pedestals
+  for(let row=0;row<=r.rows;row++){
+    for(let col=0;col<=r.cols;col++){
+      s+=`<circle cx="${col*cellW}" cy="${row*cellH}" r="${Math.max(cellW*.13,2)}" fill="#f59e0b"/>`;
+    }
+  }
+  svg.innerHTML=s;
+  document.getElementById('grid-legend').textContent=`${r.cols} × ${r.rows} = ${r.panels} ${t('panels')} | ${t('pedestals')}: ${r.peds}`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CANVAS / VISUAL
+// ═══════════════════════════════════════════════════════════
+function loadPlan(input){
+  const file=input.files[0];if(!file)return;
+  const url=URL.createObjectURL(file);
+  if(file.type==='application/pdf'){
+    document.getElementById('upload-hint-bar').style.display='none';
+    // Simple PDF notice
+    canvas.width=600;canvas.height=400;
+    ctx.fillStyle='#13203a';ctx.fillRect(0,0,600,400);
+    ctx.fillStyle='#94a3b8';ctx.font='16px Cairo';ctx.textAlign='center';
+    ctx.fillText('PDF uploaded. Draw room area below.',300,200);
+    drawRoomOverlay();
+    return;
+  }
+  const img=new Image();
+  img.onload=()=>{
+    planImg=img;
+    document.getElementById('upload-hint-bar').style.display='none';
+    canvas.width=img.width;canvas.height=img.height;
+    redrawCanvas();
+  };
+  img.src=url;
+}
+function redrawCanvas(){
+  if(!ctx)return;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(planImg)ctx.drawImage(planImg,0,0);
+  if(drawnRoom){
+    ctx.fillStyle='#3b82f640';
+    ctx.fillRect(drawnRoom.x,drawnRoom.y,drawnRoom.w,drawnRoom.h);
+    ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;
+    ctx.strokeRect(drawnRoom.x,drawnRoom.y,drawnRoom.w,drawnRoom.h);
+    if(showGrid&&state.results){
+      const r=state.results;
+      const pxPerPanel=Math.max(r.pm*40,8);
+      ctx.strokeStyle='#ef444480';ctx.lineWidth=.5;
+      for(let x=drawnRoom.x;x<=drawnRoom.x+drawnRoom.w;x+=pxPerPanel){
+        ctx.beginPath();ctx.moveTo(x,drawnRoom.y);ctx.lineTo(x,drawnRoom.y+drawnRoom.h);ctx.stroke();
+      }
+      for(let y=drawnRoom.y;y<=drawnRoom.y+drawnRoom.h;y+=pxPerPanel){
+        ctx.beginPath();ctx.moveTo(drawnRoom.x,y);ctx.lineTo(drawnRoom.x+drawnRoom.w,y);ctx.stroke();
+      }
+    }
+  }
+}
+function drawRoomOverlay(){redrawCanvas();}
+
+function toggleDraw(){
+  drawing=!drawing;
+  document.getElementById('draw-btn').classList.toggle('on',drawing);
+  canvas.style.cursor=drawing?'crosshair':'default';
+}
+function clearDraw(){drawnRoom=null;redrawCanvas();}
+function toggleGrid(){showGrid=!showGrid;document.getElementById('grid-btn').classList.toggle('on',showGrid);redrawCanvas();}
+function zoomCanvas(f){
+  canvasZoom=Math.max(.3,Math.min(3,canvasZoom*f));
+  document.getElementById('canvas-container').style.transform=`scale(${canvasZoom})`;
+  document.getElementById('canvas-container').style.transformOrigin='top left';
+}
+function resetCanvas(){canvasZoom=1;document.getElementById('canvas-container').style.transform='';drawnRoom=null;planImg=null;initBlankCanvas();}
+
+function initBlankCanvas(){
+  const wrap=document.getElementById('canvas-container');
+  const w=wrap.clientWidth||Math.min(window.innerWidth-30,800);
+  canvas.width=w;canvas.height=Math.round(w*0.55);
+  ctx.fillStyle='#0d1a2e';ctx.fillRect(0,0,canvas.width,canvas.height);
+  // draw subtle grid pattern as background hint
+  ctx.strokeStyle='#1e3050';ctx.lineWidth=0.5;
+  const step=40;
+  for(let x=0;x<canvas.width;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
+  for(let y=0;y<canvas.height;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+  // center hint text
+  ctx.fillStyle='#2a4070';ctx.font='14px Cairo';ctx.textAlign='center';
+  ctx.fillText('اضغط "✏️ رسم الغرفة" ثم ارسم مستطيلاً على هذه اللوحة',canvas.width/2,canvas.height/2-10);
+  ctx.font='11px Cairo';ctx.fillStyle='#1e3050';
+  ctx.fillText('أو ارفع مخطط PNG/JPG كخلفية',canvas.width/2,canvas.height/2+16);
+}
+
+function getPos(e,canvas){
+  const rect=canvas.getBoundingClientRect();
+  return{x:e.clientX-rect.left,y:e.clientY-rect.top};
+}
+function canvasMD(e){if(!drawing)return;drawStart=getPos(e,canvas);}
+function canvasMM(e){
+  if(!drawing||!drawStart)return;
+  const p=getPos(e,canvas);
+  redrawCanvas();
+  ctx.strokeStyle='#3b82f680';ctx.lineWidth=1;ctx.setLineDash([5,3]);
+  ctx.strokeRect(Math.min(drawStart.x,p.x),Math.min(drawStart.y,p.y),Math.abs(p.x-drawStart.x),Math.abs(p.y-drawStart.y));
+  ctx.setLineDash([]);
+}
+function canvasMU(e){
+  if(!drawing||!drawStart)return;
+  const p=getPos(e,canvas);
+  drawnRoom={x:Math.min(drawStart.x,p.x),y:Math.min(drawStart.y,p.y),w:Math.abs(p.x-drawStart.x),h:Math.abs(p.y-drawStart.y)};
+  drawStart=null;drawing=false;
+  document.getElementById('draw-btn').classList.remove('on');
+  canvas.style.cursor='default';
+  redrawCanvas();
+}
+function canvasTD(e){e.preventDefault();const t=e.touches[0];canvasMD({clientX:t.clientX,clientY:t.clientY});}
+function canvasTM(e){e.preventDefault();const t=e.touches[0];canvasMM({clientX:t.clientX,clientY:t.clientY});}
+function canvasTU(e){const t=e.changedTouches[0];canvasMU({clientX:t.clientX,clientY:t.clientY});}
+
+// ═══════════════════════════════════════════════════════════
+// TABS & LANG
+// ═══════════════════════════════════════════════════════════
+function showTab(i,el){
+  document.querySelectorAll('.content').forEach(c=>c.classList.add('hidden'));
+  document.getElementById('tab'+i).classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleLang(){
+  state.lang=state.lang==='ar'?'en':'ar';
+  const L=state.lang;
+  const dir=TR[L].dir;
+  document.documentElement.setAttribute('lang',L);
+  document.documentElement.setAttribute('dir',dir);
+  document.getElementById('h-title').textContent=TR[L]['t-title'];
+  document.getElementById('h-sub').textContent=TR[L]['t-sub'];
+  document.querySelector('.lang-btn').textContent=TR[L]['lang-btn'];
+  document.querySelectorAll('[class*="t-"]').forEach(el=>{
+    // skip if element has child elements (e.g. label containing a span)
+    if(el.children.length>0)return;
+    el.classList.forEach(cls=>{
+      if(cls.startsWith('t-')&&TR[L][cls]){el.textContent=TR[L][cls];}
+    });
+  });
+  // restore waste display after lang toggle
+  document.getElementById('waste-val').textContent=document.getElementById('f-waste').value+'%';
+  document.getElementById('waste-val').textContent=document.getElementById('f-waste').value+'%';
+  if(state.results){renderResults();renderReports();}
+  buildBrandGrid();
+}
+</script>
+</body></html>
